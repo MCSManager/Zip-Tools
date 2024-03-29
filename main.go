@@ -45,12 +45,12 @@ func main() {
 	fmt.Println("PPPP:", zipPath, distDirPath, mode, srcFiles)
 
 	if mode == UNZIP_MODE {
-		fmt.Println("UNZIP:" + zipPath + "--->" + distDirPath)
+		fmt.Println("UNZIP:", zipPath, "-->", distDirPath)
 		UnZip(distDirPath, zipPath)
 		return
 	}
 	if mode == ZIP_MODE {
-		fmt.Println("ZIP:", srcFiles, "--->"+zipPath)
+		fmt.Println("ZIP:", srcFiles, "-->"+zipPath)
 		Zip(srcFiles, zipPath)
 		return
 	}
@@ -132,26 +132,31 @@ func fileToZipWriter(file *os.File, prefix string, zw *zip.Writer) error {
 	return nil
 }
 
-func UnZip(dst, src string) {
-	zipFile, err := zip.OpenReader(src)
+func UnZip(distDirPath, zipPath string) {
+	zipFile, err := zip.OpenReader(zipPath)
 	if err != nil {
 		panic(err)
 	}
 	defer zipFile.Close()
 
+	prefix := ""
+	if distDirPath != "" && distDirPath != "." {
+		prefix = distDirPath + "/"
+	}
+
 	// 第二步，遍历 zip 中的文件
 	for _, f := range zipFile.File {
 		filePath := f.Name
 		if f.FileInfo().IsDir() {
-			_ = os.MkdirAll(filePath, os.ModePerm)
+			_ = os.MkdirAll(prefix+filePath, os.ModePerm)
 			continue
 		}
 		// 创建对应文件夹
-		if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+		if err := os.MkdirAll(prefix+filepath.Dir(filePath), os.ModePerm); err != nil {
 			panic(err)
 		}
 		// 解压到的目标文件
-		dstFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		dstFile, err := os.OpenFile(prefix+filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
 			panic(err)
 		}
