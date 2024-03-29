@@ -23,3 +23,5 @@ go.work
 file-zip
 
 .vscode
+main_linux
+main

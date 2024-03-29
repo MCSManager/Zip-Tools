@@ -2,17 +2,23 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
 var zipPath string
 var distDirPath string
 var mode int
+var encode string
 
 const (
 	ZIP_MODE   int = 1
@@ -33,6 +39,7 @@ func (i *SrcFiles) Set(value string) error {
 var srcFiles SrcFiles
 
 func init() {
+	flag.StringVar(&encode, "code", "", "support GBK,UTF-8")
 	flag.StringVar(&zipPath, "zipPath", "", "zip file path")
 	flag.StringVar(&distDirPath, "DistDirPath", "", "dir path")
 	flag.Var(&srcFiles, "file", "--file 1.txt --file 2.txt --file 3.txt")
@@ -147,6 +154,12 @@ func UnZip(distDirPath, zipPath string) {
 	// 第二步，遍历 zip 中的文件
 	for _, f := range zipFile.File {
 		filePath := f.Name
+		if encode == "GBK" {
+			i := bytes.NewReader([]byte(f.Name))
+			decoder := transform.NewReader(i, simplifiedchinese.GB18030.NewDecoder())
+			content, _ := ioutil.ReadAll(decoder)
+			filePath = string(content)
+		}
 		if f.FileInfo().IsDir() {
 			_ = os.MkdirAll(prefix+filePath, os.ModePerm)
 			continue
