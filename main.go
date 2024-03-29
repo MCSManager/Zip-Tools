@@ -41,8 +41,8 @@ var srcFiles SrcFiles
 func init() {
 	flag.StringVar(&encode, "code", "", "support GBK,UTF-8")
 	flag.StringVar(&zipPath, "zipPath", "", "zip file path")
-	flag.StringVar(&distDirPath, "DistDirPath", "", "dir path")
-	flag.Var(&srcFiles, "file", "--file 1.txt --file 2.txt --file 3.txt")
+	flag.StringVar(&distDirPath, "distDirPath", "", "dir path")
+	flag.Var(&srcFiles, "file", "-file 1.txt -file 2.txt -file 3.txt")
 	flag.IntVar(&mode, "mode", ZIP_MODE, "1=zip, 2=unzip")
 }
 
@@ -154,7 +154,7 @@ func UnZip(distDirPath, zipPath string) {
 	// 第二步，遍历 zip 中的文件
 	for _, f := range zipFile.File {
 		filePath := f.Name
-		if encode == "GBK" {
+		if encode == "gbk" {
 			i := bytes.NewReader([]byte(f.Name))
 			decoder := transform.NewReader(i, simplifiedchinese.GB18030.NewDecoder())
 			content, _ := ioutil.ReadAll(decoder)
