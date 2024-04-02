@@ -10,6 +10,8 @@ Unzip a ZIP file
 ./file-zip -mode 2 --zipPath MyZip.zip --DistDirPath MyDir --code utf-8
 ```
 
+- `--code`: `utf-8`, `gbk`, `big5`, `shift_jis`, `euckr`
+
 Compress multiple files
 
 ```bash
