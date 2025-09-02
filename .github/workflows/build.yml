@@ -21,10 +21,10 @@ jobs:
         uses: milliewalky/setup-7-zip@v2
 
       - name: Build zip-tools
-        run: build.sh
+        run: ./build.sh
 
       - name: Download 7z binaries
-        run: download_7z.sh
+        run: ./download_7z.sh
 
       - uses: softprops/action-gh-release@v2
         with:
