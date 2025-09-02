@@ -25,3 +25,6 @@ file-zip
 .vscode
 main_linux
 main
+
+# 7z download target
+output/
