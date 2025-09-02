@@ -31,7 +31,6 @@ jobs:
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           name: Development Build
-          prerelease: true
           make_latest: true
           files: |
             output/*
