@@ -27,6 +27,7 @@ jobs:
         run: ./download_7z.sh
 
       - uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           name: Development Build
