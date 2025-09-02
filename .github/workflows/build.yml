@@ -26,11 +26,17 @@ jobs:
       - name: Download 7z binaries
         run: ./download_7z.sh
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Development Build
+          path: |
+            output/*
+
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          name: Development Build
           make_latest: true
           files: |
             output/*
