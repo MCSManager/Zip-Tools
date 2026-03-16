@@ -15,6 +15,7 @@ GOOS=linux GOARCH=mips64 go build -trimpath -ldflags '-s -w --extldflags "-stati
 GOOS=linux GOARCH=mipsle go build -trimpath -ldflags '-s -w --extldflags "-static -fpic"' -o output/file_zip_linux_mipsle
 GOOS=linux GOARCH=ppc64 go build -trimpath -ldflags '-s -w --extldflags "-static -fpic"' -o output/file_zip_linux_ppc64
 GOOS=linux GOARCH=riscv64 go build -trimpath -ldflags '-s -w --extldflags "-static -fpic"' -o output/file_zip_linux_riscv64
+GOOS=linux GOARCH=loong64 go build -trimpath -ldflags '-s -w --extldflags "-static -fpic"' -o output/file_zip_linux_loong64
 GOOS=linux GOARCH=s390x go build -trimpath -ldflags '-s -w --extldflags "-static -fpic"' -o output/file_zip_linux_s390x
 GOOS=netbsd GOARCH=amd64 go build -trimpath -ldflags '-s -w --extldflags "-static -fpic"' -o output/file_zip_netbsd_x64
 GOOS=netbsd GOARCH=arm go build -trimpath -ldflags '-s -w --extldflags "-static -fpic"' -o output/file_zip_netbsd_arm
