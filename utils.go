@@ -2,8 +2,11 @@ package main
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"os"
+	"path"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/text/encoding"
@@ -30,6 +33,39 @@ func getDecoderByCoder(code string) *encoding.Decoder {
 		decoder = unicode.UTF8.NewDecoder()
 	}
 	return decoder
+}
+
+// safeExtractPath resolves a zip entry name under baseDir and rejects path traversal.
+func safeExtractPath(baseDir, name string) (string, error) {
+	name = path.Clean(strings.ReplaceAll(name, "\\", "/"))
+	if name == "." || name == ".." {
+		return "", fmt.Errorf("illegal path: %q", name)
+	}
+	if strings.HasPrefix(name, "/") {
+		return "", fmt.Errorf("illegal absolute path: %q", name)
+	}
+	for _, part := range strings.Split(name, "/") {
+		if part == ".." {
+			return "", fmt.Errorf("illegal path traversal: %q", name)
+		}
+	}
+
+	if baseDir == "" || baseDir == "." {
+		baseDir = "."
+	}
+	baseAbs, err := filepath.Abs(baseDir)
+	if err != nil {
+		return "", err
+	}
+	destAbs, err := filepath.Abs(filepath.Join(baseAbs, filepath.FromSlash(name)))
+	if err != nil {
+		return "", err
+	}
+	baseWithSep := baseAbs + string(filepath.Separator)
+	if destAbs != baseAbs && !strings.HasPrefix(destAbs, baseWithSep) {
+		return "", fmt.Errorf("illegal path escapes destination: %q", name)
+	}
+	return destAbs, nil
 }
 
 func fileToZipWriter(file *os.File, prefix string, zw *zip.Writer) error {

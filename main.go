@@ -100,24 +100,23 @@ func UnZip(distDirPath, zipPath string) error {
 
 	defer zipFile.Close()
 
-	prefix := ""
-	if distDirPath != "" && distDirPath != "." {
-		prefix = distDirPath + "/"
-	}
-
 	for _, f := range zipFile.File {
 		nameReader := bytes.NewReader([]byte(f.Name))
 		decoder := transform.NewReader(nameReader, getDecoderByCoder(encode))
 		content, _ := ioutil.ReadAll(decoder)
 		filePath := string(content)
-		if f.FileInfo().IsDir() {
-			_ = os.MkdirAll(prefix+filePath, os.ModePerm)
-			continue
-		}
-		if err := os.MkdirAll(prefix+filepath.Dir(filePath), os.ModePerm); err != nil {
+		destPath, err := safeExtractPath(distDirPath, filePath)
+		if err != nil {
 			return err
 		}
-		dstFile, err := os.OpenFile(prefix+filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if f.FileInfo().IsDir() {
+			_ = os.MkdirAll(destPath, os.ModePerm)
+			continue
+		}
+		if err := os.MkdirAll(filepath.Dir(destPath), os.ModePerm); err != nil {
+			return err
+		}
+		dstFile, err := os.OpenFile(destPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
 			return err
 		}
